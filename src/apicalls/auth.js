@@ -23,3 +23,15 @@ export const loginUser = async (payload) => {
     return err.message;
   }
 };
+
+// check user token
+export const checkToken = async () => {
+  try {
+    const res = await axiosInstance.get("/check-token", {
+      validateStatus: () => true,
+    });
+    return res.data;
+  } catch (err) {
+    return err.message;
+  }
+};

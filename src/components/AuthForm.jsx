@@ -4,9 +4,12 @@ import { loginUser, registerUser } from "../apicalls/auth";
 import { useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setUserId } from "../store/slices/userSlice";
 
 const AuthForm = ({ isLogin }) => {
   const [submitting, setSubmitting] = useState(false);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleOnFinish = async (values) => {
@@ -17,6 +20,7 @@ const AuthForm = ({ isLogin }) => {
         if (res.isSuccess) {
           message.success(res.message);
           localStorage.setItem("token", res.token);
+          dispatch(setUserId(res.token));
           navigate("/");
         } else {
           throw new Error(res.message);
@@ -29,7 +33,7 @@ const AuthForm = ({ isLogin }) => {
         const res = await registerUser(values);
         if (res.isSuccess) {
           message.success(res.message);
-          navigate("/login")
+          navigate("/login");
         } else {
           throw new Error(res.message);
         }

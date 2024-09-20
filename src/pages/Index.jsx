@@ -2,8 +2,8 @@ import React from 'react'
 
 const Index = () => {
   return (
-    <div>
-      
+    <div className='px-4'>
+      Index
     </div>
   )
 }
