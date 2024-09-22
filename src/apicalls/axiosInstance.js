@@ -6,7 +6,17 @@ const refreshLocalStorage = () => {
 
 export const axiosInstance = axios.create({
   baseURL: `${import.meta.env.VITE_SERVER_API}`,
-  headers: {
-    Authorization: `Bearer ${refreshLocalStorage()}`,
-  },
 });
+
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = refreshLocalStorage();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (err) => {
+    return Promise.reject(err);
+  }
+);

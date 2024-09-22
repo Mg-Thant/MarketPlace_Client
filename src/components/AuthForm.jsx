@@ -5,7 +5,7 @@ import { useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setUserId } from "../store/slices/userSlice";
+import { setUser } from "../store/slices/userSlice";
 
 const AuthForm = ({ isLogin }) => {
   const [submitting, setSubmitting] = useState(false);
@@ -20,7 +20,7 @@ const AuthForm = ({ isLogin }) => {
         if (res.isSuccess) {
           message.success(res.message);
           localStorage.setItem("token", res.token);
-          dispatch(setUserId(res.token));
+          dispatch(setUser(res.token));
           navigate("/");
         } else {
           throw new Error(res.message);
@@ -43,6 +43,7 @@ const AuthForm = ({ isLogin }) => {
     }
     setSubmitting(false);
   };
+
 
   return (
     <section className="h-screen w-full flex items-center justify-center">

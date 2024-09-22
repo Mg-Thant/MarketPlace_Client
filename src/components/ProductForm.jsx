@@ -1,13 +1,81 @@
-import React from "react";
-import { Checkbox, Col, Form, Input, Row, Select } from "antd";
+import React, { useEffect, useState } from "react";
+import { Checkbox, Col, Form, Input, message, Row, Select } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { SquaresPlusIcon } from "@heroicons/react/24/solid";
+import { useForm } from "antd/es/form/Form";
 
-const AddProducts = () => {
+import { getOldDataProduct, sellProduct, updateProduct } from "../apicalls/product";
+
+const ProductForm = ({
+  setActiveTabKey,
+  getAllProduct,
+  editMode,
+  editProductId,
+}) => {
+  const [form] = Form.useForm();
+  const [sellerId, setSellerId] = useState(null);
+
+  const handleOnFinish = async (values) => {
+    try {
+      let res;
+      if (editMode) {
+        values.seller_id = sellerId;
+        values.product_id = editProductId;
+        res = await updateProduct(values);
+      } else {
+        res = await sellProduct(values);
+      }
+      if (res.isSuccess) {
+        form.resetFields();
+        message.success(res.message);
+        getAllProduct();
+        setActiveTabKey("1");
+      } else {
+        throw new Error(res.message);
+      }
+    } catch (err) {
+      message.error(err.message);
+    }
+  };
+
+  const getOldProduct = async () => {
+    const res = await getOldDataProduct(editProductId);
+    setSellerId(res.product.seller);
+    if (res.isSuccess) {
+      form.setFieldsValue({
+        product_name: res.product.name,
+        product_description: res.product.description,
+        product_price: res.product.price,
+        product_category: res.product.category,
+        product_used_on: res.product.usedOn,
+        product_details: res.product.details || [],
+      });
+    } else {
+      message.error("Failed to fetch product details");
+    }
+  };
+
+  useEffect(() => {
+    if (editMode) {
+      getOldProduct();
+    } else {
+      form.resetFields();
+    }
+  }, [editMode]);
+
   return (
     <section>
-      <h3 className="text-2xl font-bold my-2">What you gonna do?</h3>
-      <Form layout="vertical">
+      <h1 className="text-3xl font-bold my-2">
+        {editMode ? "Update Product" : " What you gonna do?"}
+      </h1>
+      <Form
+        layout="vertical"
+        onFinish={handleOnFinish}
+        form={form}
+        initialValues={{
+          product_details: [],
+        }}
+      >
         <Form.Item
           name="product_name"
           label="Product Name"
@@ -130,16 +198,15 @@ const AddProducts = () => {
                 label: "Voucher",
               },
             ]}
-            defaultValue={[""]}
           />
         </Form.Item>
         <button className="font-medium text-lg text-center m-4 bg-blue-600 text-white rounded-lg flex items-center justify-center gap-2 w-3/12 py-2 float-right">
           <SquaresPlusIcon width={30} />
-          Sell
+          {editMode ? "Update" : "Sell"}
         </button>
       </Form>
     </section>
   );
 };
 
-export default AddProducts;
+export default ProductForm;
