@@ -4,16 +4,16 @@ import { loginUser, registerUser } from "../apicalls/auth";
 import { useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setUser } from "../store/slices/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { setError, setLoading, setUser } from "../store/slices/userSlice";
 
 const AuthForm = ({ isLogin }) => {
-  const [submitting, setSubmitting] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const loading = useSelector(state => state.reducer.user.loading);
 
   const handleOnFinish = async (values) => {
-    setSubmitting(true);
+    dispatch(setLoading(true));
     if (isLogin) {
       try {
         const res = await loginUser(values);
@@ -26,6 +26,7 @@ const AuthForm = ({ isLogin }) => {
           throw new Error(res.message);
         }
       } catch (err) {
+        dispatch(setError(err.message))
         message.error(err.message);
       }
     } else {
@@ -33,15 +34,17 @@ const AuthForm = ({ isLogin }) => {
         const res = await registerUser(values);
         if (res.isSuccess) {
           message.success(res.message);
+          dispatch(setError(null));
           navigate("/login");
         } else {
           throw new Error(res.message);
         }
       } catch (err) {
         message.error(err.message);
+        dispatch(setError(err.message));
       }
     }
-    setSubmitting(false);
+    dispatch(setLoading((false)));
   };
 
 
@@ -109,12 +112,12 @@ const AuthForm = ({ isLogin }) => {
             <button
               type="submit"
               className="w-full outline-none bg-blue-600 text-white py-2 rounded-md"
-              disabled={submitting}
+              disabled={loading}
             >
-              {submitting ? (
+              {loading ? (
                 <BeatLoader
                   color={"#ffffff"}
-                  loading={submitting}
+                  loading={loading}
                   size={7}
                   speedMultiplier={1}
                 />

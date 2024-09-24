@@ -8,6 +8,7 @@ const ManageProduct = ({
   getAllProduct,
   editMode,
   editProductId,
+  manageTabKey
 }) => {
   const [productActiveTabKey, setProductActiveTabKey] = useState("1");
   const items = [
@@ -43,8 +44,7 @@ const ManageProduct = ({
 
   return (
     <Tabs
-      activeKey={productActiveTabKey}
-      onChange={(key) => handleOnChange(key)}
+      defaultActiveKey={manageTabKey}
       items={items}
     />
   );

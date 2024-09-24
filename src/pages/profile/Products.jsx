@@ -1,28 +1,52 @@
 import moment from "moment";
 import { deleteProduct } from "../../apicalls/product";
 import { message } from "antd";
+import { useDispatch, useSelector } from "react-redux";
 
-const Products = ({ products, setActiveTabKey, setEditMode, setEditProductId, getAllProduct }) => {
+import { setLoading, setError } from "../../store/slices/userSlice";
+import { BeatLoader } from "react-spinners";
+
+const Products = ({
+  products,
+  setActiveTabKey,
+  setEditMode,
+  setEditProductId,
+  getAllProduct,
+  setManageTabKey,
+}) => {
+  const dispatch = useDispatch();
+  const loading = useSelector((state) => state.reducer.user.loading);
 
   const handleOnClick = (id) => {
     setEditMode(true);
     setActiveTabKey("2");
     setEditProductId(id);
-  }
+    setManageTabKey("1");
+  };
+
+  const handleUpload = (id) => {
+    setEditMode(true);
+    setActiveTabKey("2");
+    setEditProductId(id);
+    setManageTabKey("2");
+  };
 
   const handleDelete = async (id) => {
-    try{  
-    const res = await deleteProduct(id);
-      if(res.isSuccess) {
+    dispatch(setLoading(true));
+    try {
+      const res = await deleteProduct(id);
+      if (res.isSuccess) {
         message.success(res.message);
         getAllProduct();
       } else {
         throw new Error(res.message);
       }
-    } catch(err) {
+    } catch (err) {
+      dispatch(setError(err.message));
       message.error(err.message);
-    }   
-  }
+    }
+    dispatch(setLoading(false));
+  };
 
   return (
     <section>
@@ -78,33 +102,46 @@ const Products = ({ products, setActiveTabKey, setEditMode, setEditProductId, ge
                       )}
                     </td>
                     <td className="px-6 py-4 text-center">
-                    <button
-                        type="button"
-                        className="font-medium text-yellow-600 hover:underline"
-                        onClick={() => {
-                          handleOnClick(product._id)
-                        }}
-                      >
-                        Upload
-                      </button>
-                      <button
-                        type="button"
-                        className="font-medium text-blue-600 ms-4 hover:underline"
-                        onClick={() => {
-                          handleOnClick(product._id);
-                        }}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        type="button"
-                        className="font-medium text-red-600 ms-4 hover:underline"
-                        onClick={() => {
-                          handleDelete(product._id)
-                        }}
-                      >
-                        Delete
-                      </button>
+                      {loading ? (
+                        <div className="w-fit h-fit mx-auto">
+                          <BeatLoader
+                            color={"#0000ff"}
+                            loading={loading}
+                            size={7}
+                            speedMultiplier={1}
+                          />
+                        </div>
+                      ) : (
+                        <>
+                          <button
+                            type="button"
+                            className="font-medium text-yellow-600 hover:underline"
+                            onClick={() => {
+                              handleUpload(product._id);
+                            }}
+                          >
+                            Upload
+                          </button>
+                          <button
+                            type="button"
+                            className="font-medium text-blue-600 ms-4 hover:underline"
+                            onClick={() => {
+                              handleOnClick(product._id);
+                            }}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            type="button"
+                            className="font-medium text-red-600 ms-4 hover:underline"
+                            onClick={() => {
+                              handleDelete(product._id);
+                            }}
+                          >
+                            Delete
+                          </button>
+                        </>
+                      )}
                     </td>
                   </tr>
                 ))}

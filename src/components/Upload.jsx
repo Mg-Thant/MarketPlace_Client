@@ -1,11 +1,20 @@
 import { XCircleIcon } from "@heroicons/react/24/solid";
-import React, { useState } from "react";
-import { UploadProductImages } from "../apicalls/product";
+import React, { useEffect, useState } from "react";
 import { message } from "antd";
+import { setError, setLoading } from "../store/slices/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+
+import { getProductImages, UploadProductImages } from "../apicalls/product";
+import SavedImages from "./SavedImages";
+import { BeatLoader } from "react-spinners";
 
 const Upload = ({ editProductId, setActiveTabKey }) => {
   const [previewImages, setPreviewImages] = useState([]);
   const [images, setImages] = useState([]);
+  const [savedImages, setSavedImages] = useState([]);
+  const [selectedImagesCount, setSelectedImagesCount] = useState(0);
+  const dispatch = useDispatch();
+  const loading = useSelector((state) => state.reducer.user.loading);
 
   const handleOnChange = (e) => {
     setImages((prevImg) => [...prevImg, ...e.target.files]);
@@ -13,6 +22,7 @@ const Upload = ({ editProductId, setActiveTabKey }) => {
     const previewImagesArray = selectedImagesArray.map((image) =>
       URL.createObjectURL(image)
     );
+    setSelectedImagesCount((prev) => prev + selectedImagesArray.length);
     setPreviewImages((prevImages) => [...prevImages, ...previewImagesArray]);
   };
 
@@ -24,34 +34,71 @@ const Upload = ({ editProductId, setActiveTabKey }) => {
     const updatedImages = images.filter((img, index) => {
       return index !== removedImageIndex;
     });
-
+    setSelectedImagesCount((prev) => prev - 1);
     setImages(updatedImages);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    dispatch(setLoading(true));
 
-    const formData = new FormData();
-    for (let i = 0; i < images.length; i++) {
-      formData.append("product_images", images[i]);
+    if (selectedImagesCount >= 2) {
+      const formData = new FormData();
+      for (let i = 0; i < images.length; i++) {
+        formData.append("product_images", images[i]);
+      }
+      formData.append("product_id", editProductId);
+      try {
+        const res = await UploadProductImages(formData);
+        if (res.message) {
+          message.success(res.message);
+          setActiveTabKey("1");
+        } else {
+          throw new Error(res.message);
+        }
+      } catch (err) {
+        dispatch(setError(err.message));
+        message.error(err.message);
+      }
+    } else {
+      message.error("Products images must be uploaded two photos!!!");
     }
-    formData.append("product_id", editProductId);
+    dispatch(setLoading(false));
+  };
+
+  const getImages = async (id) => {
+    dispatch(setLoading(true));
     try {
-      const res = await UploadProductImages(formData);
-      if (res.message) {
+      const res = await getProductImages(id);
+      if (res.isSuccess) {
         message.success(res.message);
-        setActiveTabKey("1");
+        setSavedImages(res.product.images);
       } else {
         throw new Error(res.message);
       }
     } catch (err) {
+      dispatch(setError(err.message));
       message.error(err.message);
     }
+    dispatch(setLoading(false));
   };
+
+  useEffect(() => {
+    getImages(editProductId);
+  }, []);
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Upload Product Image</h1>
+      <h1 className="text-2xl font-bold mb-4 text-blue-600">
+        Upload Product Image
+      </h1>
+      {savedImages.length > 0 && (
+        <SavedImages
+          savedImages={savedImages}
+          setSavedImages={setSavedImages}
+          editProductId={editProductId}
+        />
+      )}
       <form
         action=""
         method="post"
@@ -101,9 +148,20 @@ const Upload = ({ editProductId, setActiveTabKey }) => {
               );
             })}
         </div>
-        <button className="block my-4 text-white bg-blue-600 rounded-md px-3 py-2 font-medium">
-          Upload
-        </button>
+        {selectedImagesCount > 1 && (
+          <button className="block my-4 text-white bg-blue-600 rounded-md px-3 py-2 font-medium" disabled={loading}>
+            {loading ? (
+              <BeatLoader
+                color={"#ffffff"}
+                loading={loading}
+                size={7}
+                speedMultiplier={1}
+              />
+            ) : (
+              "Upload"
+            )}
+          </button>
+        )}
       </form>
     </div>
   );

@@ -2,7 +2,6 @@ import { axiosInstance } from "./axiosInstance";
 
 // sell product
 export const sellProduct = async (payload) => {
-  console.log(payload);
   try {
     const res = await axiosInstance.post("/create-product", payload, {
       validateStatus: () => true,
@@ -68,6 +67,35 @@ export const UploadProductImages = async (payload) => {
     const res = await axiosInstance.post("/upload-image", payload, {
       validateStatus: () => true,
     });
+    return res.data;
+  } catch (err) {
+    return err.message;
+  }
+};
+
+// Get product image
+export const getProductImages = async (id) => {
+  try {
+    const res = await axiosInstance.get(`/product-images/${id}`, {
+      validateStatus: () => true,
+    });
+    return res.data;
+  } catch (err) {
+    return err.message;
+  }
+};
+
+// Delete product saved images
+export const delSavedImages = async (payload) => {
+  const { productId, imgUrl } = payload;
+  const encodeImageToDelete = encodeURIComponent(imgUrl);
+  try {
+    const res = await axiosInstance.delete(
+      `/product/images/destroy/${productId}/${encodeImageToDelete}`,
+      {
+        validateStatus: () => true,
+      }
+    );
     return res.data;
   } catch (err) {
     return err.message;

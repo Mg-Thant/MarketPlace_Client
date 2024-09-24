@@ -12,13 +12,26 @@ const Nav = () => {
         POINT.IO
       </Link>
       {user ? (
-        <Link
-          to={"/profile"}
-          className="bg-white text-blue-600 px-2 py-1 flex items-center gap-1 rounded-md"
-        >
-          <UserIcon width={20} />
-          Profile
-        </Link>
+        <>
+          {user.role === "user" && (
+            <Link
+              to={"/profile"}
+              className="bg-white text-blue-600 px-2 py-1 flex items-center gap-1 rounded-md"
+            >
+              <UserIcon width={20} />
+              Profile
+            </Link>
+          )}
+          {user.role === "admin" && (
+            <Link
+              to={"/admin"}
+              className="bg-white text-blue-600 px-2 py-1 flex items-center gap-1 rounded-md"
+            >
+              <UserIcon width={20} />
+              Admin Panel
+            </Link>
+          )}
+        </>
       ) : (
         <div className="flex items-center gap-4 text-base font-medium ">
           <Link

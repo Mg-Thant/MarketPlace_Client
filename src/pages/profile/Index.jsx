@@ -11,6 +11,7 @@ const Index = () => {
   const [products, setProducts] = useState([]);
   const [editMode, setEditMode] = useState(false);
   const [editProductId, setEditProductId] = useState(null);
+  const [manageTabKey, setManageTabKey] = useState("1");
 
   const getAllProduct = async () => {
     try {
@@ -25,6 +26,11 @@ const Index = () => {
     }
   };
   useEffect(() => {
+    if(activeTabKey === "1") {
+      setEditMode(false);
+      setEditProductId(null);
+      setManageTabKey("1");
+    }
     getAllProduct();
   }, [activeTabKey]);
 
@@ -32,12 +38,12 @@ const Index = () => {
     {
       key: "1",
       label: "Products",
-      children: <Products products={products} setActiveTabKey={setActiveTabKey} setEditMode={setEditMode} setEditProductId={setEditProductId} getAllProduct={getAllProduct} />,
+      children: <Products products={products} setActiveTabKey={setActiveTabKey} setEditMode={setEditMode} setEditProductId={setEditProductId} getAllProduct={getAllProduct} setManageTabKey={setManageTabKey} />,
     },
     {
       key: "2",
       label: "Manage Products",
-      children: <ManageProduct setActiveTabKey={setActiveTabKey}  getAllProduct={getAllProduct} editMode={editMode} editProductId={editProductId} />,
+      children: <ManageProduct setActiveTabKey={setActiveTabKey}  getAllProduct={getAllProduct} editMode={editMode} editProductId={editProductId} manageTabKey={manageTabKey} />,
     },
     {
       key: "3",
