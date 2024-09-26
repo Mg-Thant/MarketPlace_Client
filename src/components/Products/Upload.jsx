@@ -1,10 +1,10 @@
 import { XCircleIcon } from "@heroicons/react/24/solid";
 import React, { useEffect, useState } from "react";
 import { message } from "antd";
-import { setError, setLoading } from "../store/slices/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 
-import { getProductImages, UploadProductImages } from "../apicalls/product";
+import { setError, setLoading } from "../../store/slices/userSlice";
+import { getProductImages, UploadProductImages } from "../../apicalls/product";
 import SavedImages from "./SavedImages";
 import { BeatLoader } from "react-spinners";
 

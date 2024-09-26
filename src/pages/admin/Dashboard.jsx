@@ -50,8 +50,8 @@ const Dashboard = ({ products, users }) => {
           note={"Items"}
         />
       </div>
-      <Chart />
-      <Bar />
+      <Chart products={products} />
+      <Bar products={products} />
     </section>
   );
 };

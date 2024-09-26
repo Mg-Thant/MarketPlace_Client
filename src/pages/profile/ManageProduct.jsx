@@ -1,7 +1,7 @@
 import { Tabs } from "antd";
-import ProductForm from "../../components/ProductForm";
+import ProductForm from "../../components/Products/ProductForm";
 import { useState } from "react";
-import Upload from "../../components/Upload";
+import Upload from "../../components/Products/Upload";
 
 const ManageProduct = ({
   setActiveTabKey,

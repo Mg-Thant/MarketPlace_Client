@@ -10,8 +10,8 @@ import {
   getOldDataProduct,
   sellProduct,
   updateProduct,
-} from "../apicalls/product";
-import { setError, setLoading } from "../store/slices/userSlice";
+} from "../../apicalls/product";
+import { setError, setLoading } from "../../store/slices/userSlice";
 
 const ProductForm = ({
   setActiveTabKey,

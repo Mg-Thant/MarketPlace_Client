@@ -1,9 +1,9 @@
 import { XCircleIcon } from "@heroicons/react/24/solid";
 import React from "react";
-import { delSavedImages } from "../apicalls/product";
+import { delSavedImages } from "../../apicalls/product";
 import { message } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { setLoading, setError } from "../store/slices/userSlice";
+import { setLoading, setError } from "../../store/slices/userSlice";
 
 const SavedImages = ({ savedImages, setSavedImages, editProductId }) => {
   const dispatch = useDispatch();

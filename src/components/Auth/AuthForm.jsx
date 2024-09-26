@@ -1,11 +1,11 @@
 import { Form, Input, message } from "antd";
 
-import { loginUser, registerUser } from "../apicalls/auth";
+import { loginUser, registerUser } from "../../apicalls/auth";
 import { useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { setError, setLoading, setUser } from "../store/slices/userSlice";
+import { setError, setLoading, setUser } from "../../store/slices/userSlice";
 
 const AuthForm = ({ isLogin }) => {
   const dispatch = useDispatch();

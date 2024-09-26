@@ -16,11 +16,13 @@ const AuthProvider = ({ children }) => {
       if (res.isSuccess) {
         dispatch(setUser(res.userDoc));
       } else {
+        localStorage.removeItem("token");
+        dispatch(setUser(null));
         navigate("/");
         throw new Error(res.message);
       }
     } catch (err) {
-      message.error(err.message);
+      console.log(err.message);
     }
   };
 

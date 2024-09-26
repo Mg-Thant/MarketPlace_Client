@@ -6,7 +6,7 @@ const DashboardCard = ({title, count, icon, note}) => {
     <Card className="max-w" decoration="top" decorationColor="blue">
       <Flex justifyContent="between" alignItems="center">
         <Text>{title}</Text>
-        <Badge deltaType="moderateIncrease" isIncreasePositive={true} size="xs" icon={icon}>{note}</Badge>
+        <Badge deltatype="moderateIncrease" isincreasepositive="true" size="xs" icon={icon}>{note}</Badge>
       </Flex>
       <Metric>{count}</Metric>
     </Card>

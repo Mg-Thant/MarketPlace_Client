@@ -1,10 +1,13 @@
 import { Tabs } from "antd";
 import React, { useState, useEffect } from "react";
-import { getProducts } from "../../apicalls/product";
+import { useDispatch, useSelector } from "react-redux";
 
+import { setLoading } from "../../store/slices/userSlice";
+import { getProducts } from "../../apicalls/product";
 import Products from "./Products";
 import ManageProduct from "./ManageProduct";
 import General from "./General";
+import { FadeLoader } from "react-spinners";
 
 const Index = () => {
   const [activeTabKey, setActiveTabKey] = useState("1");
@@ -12,8 +15,11 @@ const Index = () => {
   const [editMode, setEditMode] = useState(false);
   const [editProductId, setEditProductId] = useState(null);
   const [manageTabKey, setManageTabKey] = useState("1");
+  const dispatch = useDispatch();
+  const loading = useSelector((state) => state.reducer.user.loading);
 
   const getAllProduct = async () => {
+    dispatch(setLoading(true));
     try {
       const res = await getProducts();
       if (!res.isSuccess) {
@@ -24,9 +30,10 @@ const Index = () => {
     } catch (err) {
       message.error(err.message);
     }
+    dispatch(setLoading(false));
   };
   useEffect(() => {
-    if(activeTabKey === "1") {
+    if (activeTabKey === "1") {
       setEditMode(false);
       setEditProductId(null);
       setManageTabKey("1");
@@ -38,12 +45,29 @@ const Index = () => {
     {
       key: "1",
       label: "Products",
-      children: <Products products={products} setActiveTabKey={setActiveTabKey} setEditMode={setEditMode} setEditProductId={setEditProductId} getAllProduct={getAllProduct} setManageTabKey={setManageTabKey} />,
+      children: (
+        <Products
+          products={products}
+          setActiveTabKey={setActiveTabKey}
+          setEditMode={setEditMode}
+          setEditProductId={setEditProductId}
+          getAllProduct={getAllProduct}
+          setManageTabKey={setManageTabKey}
+        />
+      ),
     },
     {
       key: "2",
       label: "Manage Products",
-      children: <ManageProduct setActiveTabKey={setActiveTabKey}  getAllProduct={getAllProduct} editMode={editMode} editProductId={editProductId} manageTabKey={manageTabKey} />,
+      children: (
+        <ManageProduct
+          setActiveTabKey={setActiveTabKey}
+          getAllProduct={getAllProduct}
+          editMode={editMode}
+          editProductId={editProductId}
+          manageTabKey={manageTabKey}
+        />
+      ),
     },
     {
       key: "3",
@@ -60,16 +84,28 @@ const Index = () => {
   const handleOnChange = (key) => {
     setActiveTabKey(key);
     setEditMode(false);
-  }
+  };
 
   return (
-    <Tabs
-      activeKey={activeTabKey}
-      onChange={(key) => handleOnChange(key)}
-      items={items}
-      tabPosition="left"
-      size="large"
-    />
+    <>
+      {loading ? (
+        <FadeLoader
+          color={"#0000ff"}
+          loading={loading}
+          size={15}
+          speedMultiplier={1}
+          className="mx-auto mt-44"
+        />
+      ) : (
+        <Tabs
+          activeKey={activeTabKey}
+          onChange={(key) => handleOnChange(key)}
+          items={items}
+          tabPosition="left"
+          size="large"
+        />
+      )}
+    </>
   );
 };
 
