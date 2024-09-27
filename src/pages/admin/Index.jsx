@@ -7,25 +7,56 @@ import General from "./General";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Dashboard from "./Dashboard";
-import { BellAlertIcon, ChartBarIcon, SwatchIcon, UserIcon, UsersIcon } from "@heroicons/react/24/solid";
+import {
+  BellAlertIcon,
+  ChartBarIcon,
+  SwatchIcon,
+  UserIcon,
+  UsersIcon,
+} from "@heroicons/react/24/solid";
+import { getAllNoti } from "../../apicalls/notification";
+import Notification from "./Notification";
 
 const Index = () => {
   const [activeTabKey, setActiveTabKey] = useState("1");
   const [products, setProducts] = useState([]);
   const [users, setUsers] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPage, setTotalPage] = useState(0);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [pendingProducts, setPendingProducts] = useState(0);
+
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.reducer.user);
 
-  const getAllProduct = async () => {
+  const getAllProduct = async (page = 1, perPage = 10) => {
     try {
-      const res = await getProducts();
+      const res = await getProducts(page, perPage);
       if (res.isSuccess) {
         setProducts(res.products);
+        setCurrentPage(res.currentPage);
+        setTotalPage(res.totalPages);
+        setTotalProducts(res.totalProducts);
+        setPendingProducts(res.pendingProducts);
       } else {
         throw new Error(res.message);
       }
     } catch (err) {
       message.error(err.message);
+    }
+  };
+
+  const getNoti = async () => {
+    try {
+      const res = await getAllNoti();
+      if (res.isSuccess) {
+        setNotifications(res.notis);
+      } else {
+        throw new Error(res.message);
+      }
+    } catch (err) {
+      console.error(err.message);
     }
   };
 
@@ -50,8 +81,9 @@ const Index = () => {
 
   useEffect(() => {
     isAdmin();
-    getAllProduct();
+    getAllProduct(1, 10);
     getUsers();
+    getNoti();
   }, [activeTabKey]);
 
   const handleOnChange = (key) => {
@@ -67,7 +99,15 @@ const Index = () => {
           Dashboard
         </span>
       ),
-      children: <Dashboard products={products} users={users} />,
+      children: (
+        <Dashboard
+          products={products}
+          users={users}
+          totalProducts={totalProducts}
+          pendingProducts={pendingProducts}
+          setActiveTabKey={setActiveTabKey}
+        />
+      ),
     },
     {
       key: "2",
@@ -77,7 +117,15 @@ const Index = () => {
           Manage Products
         </span>
       ),
-      children: <Products products={products} getAllProduct={getAllProduct} />,
+      children: (
+        <Products
+          products={products}
+          getAllProduct={getAllProduct}
+          setCurrentPage={setCurrentPage}
+          currentPage={currentPage}
+          totalPage={totalPage}
+        />
+      ),
     },
     {
       key: "3",
@@ -97,7 +145,7 @@ const Index = () => {
           Notifications
         </span>
       ),
-      children: "Content of Tab Pane 2",
+      children: <Notification notifications={notifications} />,
     },
     {
       key: "5",

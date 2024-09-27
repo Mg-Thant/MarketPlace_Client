@@ -8,15 +8,25 @@ import Products from "./Products";
 import ManageProduct from "./ManageProduct";
 import General from "./General";
 import { FadeLoader } from "react-spinners";
+import { getAllNoti } from "../../apicalls/notification";
+import {
+  BellAlertIcon,
+  UserIcon,
+  SwatchIcon,
+  SquaresPlusIcon,
+} from "@heroicons/react/24/solid";
+import Notification from "./Notification";
 
 const Index = () => {
   const [activeTabKey, setActiveTabKey] = useState("1");
   const [products, setProducts] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   const [editMode, setEditMode] = useState(false);
   const [editProductId, setEditProductId] = useState(null);
   const [manageTabKey, setManageTabKey] = useState("1");
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.reducer.user.loading);
+  const notiCount = notifications.filter((noti) => !noti.isRead).length;
 
   const getAllProduct = async () => {
     dispatch(setLoading(true));
@@ -32,6 +42,20 @@ const Index = () => {
     }
     dispatch(setLoading(false));
   };
+
+  const getNoti = async () => {
+    try {
+      const res = await getAllNoti();
+      if (res.isSuccess) {
+        setNotifications(res.notis);
+      } else {
+        throw new Error(res.message);
+      }
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
   useEffect(() => {
     if (activeTabKey === "1") {
       setEditMode(false);
@@ -39,12 +63,18 @@ const Index = () => {
       setManageTabKey("1");
     }
     getAllProduct();
+    getNoti();
   }, [activeTabKey]);
 
   const items = [
     {
       key: "1",
-      label: "Products",
+      label: (
+        <span className="flex items-start gap-2">
+          <SwatchIcon width={20} />
+          Products
+        </span>
+      ),
       children: (
         <Products
           products={products}
@@ -58,7 +88,12 @@ const Index = () => {
     },
     {
       key: "2",
-      label: "Manage Products",
+      label: (
+        <span className="flex items-start gap-2">
+          <SquaresPlusIcon width={20} />
+          Manage Products
+        </span>
+      ),
       children: (
         <ManageProduct
           setActiveTabKey={setActiveTabKey}
@@ -71,12 +106,29 @@ const Index = () => {
     },
     {
       key: "3",
-      label: "Notifications",
-      children: "Content of Tab Pane 2",
+      label: (
+        <span className="flex items-start gap-2">
+          <BellAlertIcon width={20} />
+          Notifications
+          {notifications.length > 0 && notiCount > 0 && (
+            <span className="bg-blue-600 font-medium w-4 h-4 rounded-full text-xs text-white text-center -ml-1">
+              {notiCount}
+            </span>
+          )}
+        </span>
+      ),
+      children: (
+        <Notification notifications={notifications} getNoti={getNoti} />
+      ),
     },
     {
       key: "4",
-      label: "General",
+      label: (
+        <span className="flex items-start gap-2">
+          <UserIcon width={20} />
+          Profile
+        </span>
+      ),
       children: <General />,
     },
   ];

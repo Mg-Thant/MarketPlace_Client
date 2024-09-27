@@ -10,6 +10,9 @@ const Hero = ({ setProducts, getAllProduct, getSearchValue, setSuccess }) => {
   const dispatch = useDispatch();
 
   const searchHandler = async () => {
+    if(searchKey.trim().length === 0) {
+      return message.error("Search keyword must have!!!")
+    }
     dispatch(setLoading(true));
     const res = await getProductsByFilter("searchKey", searchKey);
     if (res.isSuccess) {
@@ -38,7 +41,7 @@ const Hero = ({ setProducts, getAllProduct, getSearchValue, setSuccess }) => {
         success. Explore, connect, and thrive with us.
       </p>
       <div className="max-w-[250px] mx-auto flex items-center gap-2">
-        <div className="bg-gray-200 px-2 py-1 rounded-md flex items-center">
+        <div className="bg-white px-2 py-1 rounded-md flex items-center">
           <input
             type="text"
             className="w-full bg-transparent outline-none px-2"

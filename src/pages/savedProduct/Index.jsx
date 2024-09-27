@@ -71,7 +71,7 @@ const Index = () => {
                 })}
               </>
             )}
-            {savedProducts.length === 0 && <p>No saved products!!!</p>}
+            {savedProducts.length === 0 && <p className="font-medium text-red-600">No saved products!!!</p>}
           </>
         )}
       </div>

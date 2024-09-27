@@ -1,11 +1,14 @@
 import { axiosInstance } from "./axiosInstance";
 
 // get Products
-export const getProducts = async () => {
+export const getProducts = async (page, perPage) => {
   try {
-    const res = await axiosInstance.get("/api/products", {
-      validateStatus: () => true,
-    });
+    const res = await axiosInstance.get(
+      `/api/products?page=${page}&perPage=${perPage}`,
+      {
+        validateStatus: () => true,
+      }
+    );
     return res.data;
   } catch (err) {
     return err.message;

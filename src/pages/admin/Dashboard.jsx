@@ -8,9 +8,14 @@ import {
 import Chart from "../../components/Dashboard/Chart";
 import Bar from "../../components/Dashboard/Bar";
 
-const Dashboard = ({ products, users }) => {
+const Dashboard = ({
+  products,
+  users,
+  totalProducts,
+  pendingProducts,
+  setActiveTabKey,
+}) => {
   const [totalSales, setTotalSales] = useState(0);
-  const [productCount, setProductCount] = useState(0);
   const [userCount, setUserCount] = useState(0);
 
   const calcTotalSales = () => {
@@ -22,7 +27,6 @@ const Dashboard = ({ products, users }) => {
 
   useEffect(() => {
     if (products.length) {
-      setProductCount(products.length);
       setUserCount(users.length);
       calcTotalSales();
     }
@@ -31,24 +35,38 @@ const Dashboard = ({ products, users }) => {
   return (
     <section className="mt-3 mr-4">
       <div className="flex items-center gap-6">
-        <DashboardCard
-          title={"Total Sales"}
-          count={`${totalSales}MMK`}
-          icon={BanknotesIcon}
-          note={"MMK"}
-        />
-        <DashboardCard
-          title={"Active User"}
-          count={userCount}
-          icon={UserGroupIcon}
-          note={"Users"}
-        />
-        <DashboardCard
-          title={"Products"}
-          count={productCount}
-          icon={ShoppingCartIcon}
-          note={"Items"}
-        />
+        <div className="w-full">
+          <DashboardCard
+            title={"Total Sales"}
+            count={`${totalSales}MMK`}
+            icon={BanknotesIcon}
+            note={"MMK"}
+          />
+        </div>
+        <div onClick={() => setActiveTabKey("3")} className="w-full">
+          <DashboardCard
+            title={"Active User"}
+            count={userCount}
+            icon={UserGroupIcon}
+            note={"Users"}
+          />
+        </div>
+        <div onClick={() => setActiveTabKey("2")} className="w-full">
+          <DashboardCard
+            title={"Products"}
+            count={totalProducts}
+            icon={ShoppingCartIcon}
+            note={"Items"}
+          />
+        </div>
+        <div onClick={() => setActiveTabKey("2")} className="w-full">
+          <DashboardCard
+            title={"Pending Products"}
+            count={pendingProducts}
+            icon={ShoppingCartIcon}
+            note={"pending"}
+          />
+        </div>
       </div>
       <Chart products={products} />
       <Bar products={products} />

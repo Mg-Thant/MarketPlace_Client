@@ -1,10 +1,13 @@
 import { axiosInstance } from "./axiosInstance";
 
-export const getProducts = async () => {
+export const getProducts = async (page, perPage) => {
   try {
-    const res = await axiosInstance.get("/admin/products", {
-      validateStatus: () => true,
-    });
+    const res = await axiosInstance.get(
+      `/admin/products?page=${page}&perPage=${perPage}`,
+      {
+        validateStatus: () => true,
+      }
+    );
     return res.data;
   } catch (err) {
     return err.message;

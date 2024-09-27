@@ -1,11 +1,14 @@
 import moment from "moment";
 import React from "react";
-import { BeatLoader } from "react-spinners";
 
-import { approveProduct, rejectProduct, rollBackProduct } from "../../apicalls/admin";
-import { message } from "antd";
+import {
+  approveProduct,
+  rejectProduct,
+  rollBackProduct,
+} from "../../apicalls/admin";
+import { message, Pagination } from "antd";
 
-const Products = ({ products, getAllProduct }) => {
+const Products = ({ products, getAllProduct, setCurrentPage, currentPage, totalPage  }) => {
   const handleApprove = async (id, status) => {
     const handlePayload = {
       id,
@@ -46,22 +49,28 @@ const Products = ({ products, getAllProduct }) => {
     const handlePayload = {
       id,
       status,
-    }
+    };
     try {
       const res = await rollBackProduct(handlePayload);
-      if(res.isSuccess) {
+      if (res.isSuccess) {
         message.success("Product has roll back!!!");
         getAllProduct();
       } else {
         throw new Error(res.message);
       }
-    } catch(err) {
+    } catch (err) {
       message.error(err.message);
     }
-  }
+  };
+
+  const handleOnChange = (page) => {
+    const perPage = 6;
+    setCurrentPage(page);
+    getAllProduct(page, perPage);
+  };
 
   return (
-    <section>
+    <section className="mr-4">
       <h1 className="text-3xl font-semibold my-2">Products List</h1>
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
         <table className="w-full text-sm rtl:text-right text-gray-500 text-left">
@@ -179,6 +188,13 @@ const Products = ({ products, getAllProduct }) => {
             )}
           </tbody>
         </table>
+        <div className="flex mt-4 mb-20 justify-end max-w-7xl mx-auto">
+          <Pagination
+            current={currentPage}
+            total={totalPage * 10}
+            onChange={handleOnChange}
+          />
+        </div>
       </div>
     </section>
   );
