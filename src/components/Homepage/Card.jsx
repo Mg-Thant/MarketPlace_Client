@@ -45,7 +45,7 @@ const Card = ({
   };
 
   return (
-    <div className={`bg-white p-4 rounded-md `}>
+    <div className={`bg-white p-4 rounded-md`}>
       {product.images[0] ? (
         <Link to={`/products/${product._id}`}>
           <img

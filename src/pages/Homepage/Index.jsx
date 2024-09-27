@@ -16,6 +16,7 @@ const Index = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState(0);
   const [success, setSuccess] = useState(false);
+  const [showPagination, setShowPagination] = useState(false);
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.reducer.user.loading);
 
@@ -75,12 +76,14 @@ const Index = () => {
         getAllProduct={getAllProduct}
         getSearchValue={getSearchValue}
         setSuccess={setSuccess}
+        setShowPagination={setShowPagination}
       />
       <Filter
         setProducts={setProducts}
         getAllProduct={getAllProduct}
         getSearchValue={getSearchValue}
         setSuccess={setSuccess}
+        setShowPagination={setShowPagination}
       />
       {loading ? (
         <FadeLoader
@@ -92,7 +95,7 @@ const Index = () => {
         />
       ) : (
         <>
-          <div className="max-w-7xl mx-auto grid grid-cols-3 gap-4">
+          <div className="max-w-7xl mx-auto grid grid-cols-3 gap-4 mb-8">
             {products && products.length > 0 && success && (
               <>
                 {products.map((product) => (
@@ -112,13 +115,15 @@ const Index = () => {
               </p>
             )}
           </div>
-          <div className="flex mt-4 mb-20 justify-end max-w-7xl mx-auto">
-            <Pagination
-              current={currentPage}
-              total={totalPage * 6}
-              onChange={handleOnChange}
-            />
-          </div>
+          {showPagination && (
+            <div className="flex mt-4 mb-20 justify-end max-w-7xl mx-auto">
+              <Pagination
+                current={currentPage}
+                total={totalPage * 6}
+                onChange={handleOnChange}
+              />
+            </div>
+          )}
         </>
       )}
     </section>

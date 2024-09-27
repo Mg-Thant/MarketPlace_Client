@@ -5,11 +5,12 @@ import { useDispatch } from "react-redux";
 import { setLoading } from "../../store/slices/userSlice";
 import { getProductsByFilter } from "../../apicalls/public";
 
-const Hero = ({ setProducts, getAllProduct, getSearchValue, setSuccess }) => {
+const Hero = ({ setProducts, getAllProduct, getSearchValue, setSuccess, setShowPagination }) => {
   const [searchKey, setSearchKey] = useState("");
   const dispatch = useDispatch();
 
   const searchHandler = async () => {
+    setShowPagination(false);
     if(searchKey.trim().length === 0) {
       return message.error("Search keyword must have!!!")
     }
@@ -29,6 +30,7 @@ const Hero = ({ setProducts, getAllProduct, getSearchValue, setSuccess }) => {
   const inputClear = () => {
     setSearchKey("");
     getAllProduct();
+    setShowPagination(true);
   };
 
   return (

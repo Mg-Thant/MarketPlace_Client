@@ -5,7 +5,13 @@ import { useDispatch } from "react-redux";
 
 import { setLoading } from "../../store/slices/userSlice";
 
-const Filter = ({ setProducts, getAllProduct, getSearchValue, setSuccess }) => {
+const Filter = ({
+  setProducts,
+  getAllProduct,
+  getSearchValue,
+  setSuccess,
+  setShowPagination,
+}) => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const dispatch = useDispatch();
 
@@ -41,6 +47,7 @@ const Filter = ({ setProducts, getAllProduct, getSearchValue, setSuccess }) => {
   ];
 
   const productsFilter = async (index) => {
+    setShowPagination(false);
     dispatch(setLoading(true));
     setSelectedCategory(index);
     const res = await getProductsByFilter("category", Category[index].value);
@@ -56,6 +63,7 @@ const Filter = ({ setProducts, getAllProduct, getSearchValue, setSuccess }) => {
 
   const clearHandler = () => {
     setSelectedCategory("");
+    setShowPagination(true);
     getAllProduct();
   };
 
